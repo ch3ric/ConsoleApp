@@ -1,0 +1,9 @@
+parameters:
+    app.api_url: http://your-api.com
+    rabbit_mq_host: localhost
+    rabbit_mq_port: 5672
+    rabbit_mq_user: guest
+    rabbit_mq_password: guest
+    rabbit_mq_vhost: '/'
+    rabbit_mq_lazy: true
+    rabbitmq_prefix: dev

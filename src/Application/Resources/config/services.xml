@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="monolog.logger.level.debug" type="constant">Monolog\Logger::DEBUG</parameter>
+        <parameter key="monolog.logger.level.error" type="constant">Monolog\Logger::ERROR</parameter>
+    </parameters>
+
+    <services>
+        <service id="event_dispatcher" class="Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher">
+            <argument type="service" id="service_container" />
+        </service>
+
+        <service id="app.command.do_something" class="Application\Command\DoSomethingCommand">
+            <tag name="app.console.command" />
+        </service>
+
+        <service id="app.api_client" class="Guzzle\Service\Client">
+            <argument>%app.api_url%</argument>
+            <call method="setDefaultOption">
+                <argument>headers/Content-Type</argument>
+                <argument>application/json</argument>
+            </call>
+        </service>
+
+        <service id="old_sound_rabbit_mq.command.consumer" class="OldSound\RabbitMqBundle\Command\ConsumerCommand">
+            <call method="setContainer">
+                <argument type="service" id="service_container" />
+            </call>
+            <tag name="app.console.command" />
+        </service>
+
+        <service id="app.rabbitmq.consumer.default" class="Application\RabbitMq\Consumer\DefaultConsumer">
+            <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="logger" />
+            <argument type="service" id="old_sound_rabbit_mq.error_producer" />
+        </service>
+
+        <service id="app.rabbitmq.listener.do_something" class="Application\RabbitMq\Listener\DoSomethingListener">
+            <argument type="service" id="app.api_client" />
+            <tag name="kernel.event_listener" event="rabbitmq.message.something" method="onMessage" />
+        </service>
+
+        <service id="monolog.rotating_file_handler" class="Monolog\Handler\RotatingFileHandler" public="false">
+            <argument>%app.logs_dir%/%app.env%.log</argument>
+            <argument>15</argument>
+            <argument>%monolog.logger.level%</argument>
+        </service>
+
+        <service id="logger" class="Monolog\Logger" public="false">
+            <argument>%app.env%</argument>
+            <call method="pushHandler">
+                <argument type="service" id="monolog.rotating_file_handler" />
+            </call>
+        </service>
+    </services>
+</container>

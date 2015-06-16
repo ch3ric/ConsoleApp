@@ -1,0 +1,43 @@
+#!/usr/bin/env php
+<?php
+
+set_time_limit(0);
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Debug\Debug;
+use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
+use Symfony\Component\Config\ConfigCache;
+use Application\Application;
+use Application\DependencyInjection\ContainerBuilder;
+
+$input = new ArgvInput();
+$env = $input->getParameterOption(array('--env', '-e'), getenv('SYMFONY_ENV') ?: 'dev');
+$debug = getenv('SYMFONY_DEBUG') !== '0' && !$input->hasParameterOption(array('--no-debug', '')) && $env !== 'prod';
+
+if ($debug) {
+    Debug::enable();
+}
+
+$file = __DIR__ .'/cache/' .$env . 'Container.php';
+$containerConfigCache = new ConfigCache($file, $debug);
+
+if (!$containerConfigCache->isFresh()) {
+    $containerBuilder = new ContainerBuilder();
+    $containerBuilder
+        ->setAppParameters($debug, $env, __DIR__ . '/..')
+        ->build();
+
+    $dumper = new PhpDumper($containerBuilder);
+    $containerConfigCache->write(
+        $dumper->dump(array('class' => 'CachedContainer')),
+        $containerBuilder->getResources()
+    );
+}
+
+require_once $file;
+$container = new CachedContainer();
+
+$application = new Application($container);
+$application->run($input);

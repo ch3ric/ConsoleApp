@@ -1,0 +1,23 @@
+{
+    "name": "cheric/console-app",
+    "license": "MIT",
+    "type": "project",
+    "description": "Console application with Symfony Components",
+    "autoload": {
+        "psr-0": { "": "src/" }
+    },
+    "require": {
+        "php": ">=5.5.5",
+        "symfony/console": "2.7.*",
+        "symfony/dependency-injection": "2.7.*",
+        "symfony/config": "2.7.*",
+        "symfony/yaml": "2.7.*",
+        "monolog/monolog": "1.11.*",
+        "symfony/debug": "2.7.*",
+        "guzzle/guzzle": "3.9.*",
+        "oldsound/rabbitmq-bundle": "dev-master"
+    },
+    "config": {
+        "bin-dir": "bin"
+    }
+}

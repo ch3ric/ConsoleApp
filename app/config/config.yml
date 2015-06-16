@@ -1,0 +1,24 @@
+imports:
+    - { resource: parameters.yml }
+
+old_sound_rabbit_mq:
+    connections:
+        default:
+            host:     %rabbit_mq_host%
+            port:     %rabbit_mq_port%
+            user:     %rabbit_mq_user%
+            password: %rabbit_mq_password%
+            vhost:    %rabbit_mq_vhost%
+            lazy:     %rabbit_mq_lazy%
+    producers:
+        error:
+            connection:       default
+            exchange_options: {name: '%rabbitmq_prefix%-error', type: direct}
+            queue_options:    {name: '%rabbitmq_prefix%-error'}
+    consumers:
+        default:
+            connection:       default
+            exchange_options: {name: '%rabbitmq_prefix%-default', type: direct}
+            queue_options:    {name: '%rabbitmq_prefix%-default'}
+            callback:         app.rabbitmq.consumer.default
+            qos_options:      {prefetch_size: 0, prefetch_count: 5, global: false}
