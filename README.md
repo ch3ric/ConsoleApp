@@ -1,7 +1,7 @@
 Console Application with Symfony Components
 ===========================================
 
-When you develop a PHP application to run system scripts or cron jobs or AMQP consumers or to crawl APIs, you definitely don't need a HTTP fullstack framework like Symfony. But you could use its components: Console, Dependency Injection, Config for example can be very usefull.
+When you develop a PHP application to run system scripts or cron jobs or AMQP consumers or to crawl APIs, you definitely don't need a HTTP fullstack framework like Symfony. But you could use its components: Console, Dependency Injection, Config for example can be very useful.
 
 Here is an example to bootstrap a simple console application with these components:
 
